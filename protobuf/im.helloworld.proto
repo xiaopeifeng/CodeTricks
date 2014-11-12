@@ -1,0 +1,7 @@
+package im;
+message helloworld 
+{
+	required string usrname = 1;
+	required string passwd = 2;
+	optional string email = 3;
+}
