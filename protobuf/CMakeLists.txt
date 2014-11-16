@@ -9,8 +9,10 @@ aux_source_directory(. DIR_SRCS)
 
 add_subdirectory(pb)
 
+add_subdirectory(client)
+
 add_definitions(-std=c++11)
 
 add_executable(googleproto ${DIR_SRCS})
 
-target_link_libraries(googleproto helloworld ${PROTOBUF_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(googleproto helloworld ${PROTOBUF_LIBRARY})
