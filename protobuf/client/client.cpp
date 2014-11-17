@@ -27,7 +27,10 @@ void connect_handle(const boost::system::error_code& err, const std::string send
 	}
 	static ip::tcp::no_delay option(true);
 	sock.set_option(option);
-	async_write(sock, buffer(sendbuf,sendbuf.length()),
+	int packet_length = sendbuf.length();
+	boost::asio::streambuf tempbuf;
+	boost::asio::write(sock, boost::asio::buffer(&packet_length, sizeof(int)));
+	async_write(sock, buffer(sendbuf,sendbuf.length()), boost::asio::transfer_exactly(packet_length),
 		boost::bind(&send_handle, boost::asio::placeholders::error, 
 		    boost::asio::placeholders::bytes_transferred));
 }

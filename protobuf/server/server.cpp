@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <google/protobuf/message.h>
 #include "../serialization.hpp"
@@ -11,8 +12,8 @@
 
 using namespace boost::asio;
 io_service ioservice;
-//ip::tcp::acceptor acceptor(ioservice, ip::tcp::endpoint(ip::tcp::v4(), 27015));
-class server
+
+class server : public boost::enable_shared_from_this<server>
 {
     typedef boost::function<void(google::protobuf::Message*)> message_callback_t;
 public:
@@ -36,11 +37,15 @@ private:
     	void handle_accept(ip::tcp::socket* sock, const boost::system::error_code& err)
 	{
 		if(err) return;
-//		start();
+		start();
 		std::cout << "client: " << sock->remote_endpoint().address().to_string() << "is connected..."  << std::endl;
-		memset(_buf, 0 ,max_length);
-		sock->async_read_some(boost::asio::buffer(_buf, max_length),
-			boost::bind(&server::handle_read, this, 
+		memset(_buf, 0, max_length);
+		int packet_length;
+		boost::asio::read(*sock, boost::asio::buffer(&packet_length, sizeof(int)));
+		std::cout << "length : " << packet_length << std::endl;
+
+		boost::asio::async_read(*sock, request_buf, boost::asio::transfer_exactly(packet_length), 
+			boost::bind(&server::handle_read, this,
 			    boost::asio::placeholders::error,
 			    boost::asio::placeholders::bytes_transferred));
 	}
@@ -49,7 +54,10 @@ private:
 	{
 		if(err) return;
 	    	std::cout << bytes_transferred << "bytes received..." << std::endl;
-		google::protobuf::Message* message = fxp::decode(std::string(_buf, strlen(_buf)));
+		std::string tmp_str; tmp_str.resize(bytes_transferred);
+		request_buf.sgetn(&tmp_str[0], bytes_transferred);
+		request_buf.consume(bytes_transferred);
+		google::protobuf::Message* message = fxp::decode(tmp_str);
 		std::cout << "msg type: " << message->GetTypeName();
 		deal_message(message);	
 	}
@@ -71,6 +79,7 @@ private:
 	std::map<std::string, message_callback_t> 	_message_callbacks;
 	enum 						{max_length = 1024};
 	char 						_buf[max_length];
+	boost::asio::streambuf				request_buf;
 };
 
 void deal_with_helloworld(google::protobuf::Message* msg)
