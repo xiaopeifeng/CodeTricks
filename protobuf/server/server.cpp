@@ -36,7 +36,7 @@ private:
     	void handle_accept(ip::tcp::socket* sock, const boost::system::error_code& err)
 	{
 		if(err) return;
-		start();
+//		start();
 		std::cout << "client: " << sock->remote_endpoint().address().to_string() << "is connected..."  << std::endl;
 		memset(_buf, 0 ,max_length);
 		sock->async_read_some(boost::asio::buffer(_buf, max_length),
@@ -48,7 +48,9 @@ private:
 	void handle_read(const boost::system::error_code& err, size_t bytes_transferred)
 	{
 		if(err) return;
-		google::protobuf::Message* message = fxp::decode(std::string(_buf));
+	    	std::cout << bytes_transferred << "bytes received..." << std::endl;
+		google::protobuf::Message* message = fxp::decode(std::string(_buf, strlen(_buf)));
+		std::cout << "msg type: " << message->GetTypeName();
 		deal_message(message);	
 	}
 
@@ -58,6 +60,10 @@ private:
 		if(iter_map != _message_callbacks.end())
 		{
 			iter_map->second(msg);	
+		}
+		else
+		{
+			std::cout << "message dealer no found" << std::endl;	
 		}
 	}
 private:

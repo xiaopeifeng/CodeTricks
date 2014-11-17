@@ -8,12 +8,13 @@ using namespace boost::asio;
 boost::asio::io_service ioservice;
 ip::tcp::socket sock(ioservice);	
 
-void send_handle(const boost::system::error_code& err, std::size_t bytes_transftered)
+void send_handle(const boost::system::error_code& err, std::size_t bytes_transferred)
 {
 	if(err)
 	{
-	
+		std::cout << "send_handle error" << std::endl;	
 	}
+	std::cout << bytes_transferred << "has been transferted" << std::endl;
 	std::cout << "send sucess" << std::endl;
 }
 
@@ -21,6 +22,7 @@ void connect_handle(const boost::system::error_code& err, const std::string send
 {
 	if(err)	
 	{
+	    	std::cout << "connect_handle error" << std::endl;
 		return;	
 	}
 	static ip::tcp::no_delay option(true);
@@ -38,4 +40,8 @@ int main()
 	msg.set_passwd("fengxiaopei");
 	msg.set_email("xiaopeifenng@gmail.com");
 	std::string encode_message = fxp::encode(msg);
+	sock.async_connect(peer, boost::bind(connect_handle, 
+		    boost::asio::placeholders::error, 
+		    encode_message));
+	ioservice.run();
 }
