@@ -1,2 +1,0 @@
-/usr/bin/ar cr libhelloworld.a  CMakeFiles/helloworld.dir/im.helloworld.pb.o
-/usr/bin/ranlib libhelloworld.a
