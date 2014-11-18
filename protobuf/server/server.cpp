@@ -24,6 +24,7 @@ public:
     	void start()
 	{
 	    ip::tcp::socket* sock = new ip::tcp::socket(ioservice);
+	 //   boost::shared_ptr<ip::tcp::socket> sock = boost::make_shared<ip::tcp::socket>(boost::ref(ioservice));
 	    _acceptor.async_accept(*sock, boost::bind(&server::handle_accept, this, 
 			    				sock, 
 			    				boost::asio::placeholders::error));	

@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/server.dir/server.o  -o server -rdynamic ../pb/libhelloworld.a -lboost_system -lboost_filesystem -lprotobuf 

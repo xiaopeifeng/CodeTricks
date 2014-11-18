@@ -1,0 +1,57 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTryCompileExec2352096815/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2352096815.dir/build.make CMakeFiles/cmTryCompileExec2352096815.dir/build
+make[1]: Entering directory '/home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2352096815.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTryCompileExec2352096815.dir/CheckSymbolExists.c.o   -c /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTryCompileExec2352096815
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2352096815.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTryCompileExec2352096815.dir/CheckSymbolExists.c.o  -o cmTryCompileExec2352096815 -rdynamic 
+CMakeFiles/cmTryCompileExec2352096815.dir/CheckSymbolExists.c.o：在函数‘main’中：
+CheckSymbolExists.c:(.text+0xa)：对‘pthread_create’未定义的引用
+CMakeFiles/cmTryCompileExec2352096815.dir/build.make:88: recipe for target 'cmTryCompileExec2352096815' failed
+make[1]: Leaving directory '/home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp'
+collect2: 错误：ld 返回 1
+make[1]: *** [cmTryCompileExec2352096815] Error 1
+Makefile:118: recipe for target 'cmTryCompileExec2352096815/fast' failed
+make: *** [cmTryCompileExec2352096815/fast] Error 2
+
+File /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTryCompileExec2255500240/fast"
+/usr/bin/make -f CMakeFiles/cmTryCompileExec2255500240.dir/build.make CMakeFiles/cmTryCompileExec2255500240.dir/build
+make[1]: Entering directory '/home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp'
+/usr/bin/cmake -E cmake_progress_report /home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp/CMakeFiles 1
+Building C object CMakeFiles/cmTryCompileExec2255500240.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTryCompileExec2255500240.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.0/Modules/CheckFunctionExists.c
+Linking C executable cmTryCompileExec2255500240
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTryCompileExec2255500240.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTryCompileExec2255500240.dir/CheckFunctionExists.c.o  -o cmTryCompileExec2255500240 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: 错误：ld 返回 1
+CMakeFiles/cmTryCompileExec2255500240.dir/build.make:88: recipe for target 'cmTryCompileExec2255500240' failed
+make[1]: Leaving directory '/home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/CMakeTmp'
+Makefile:118: recipe for target 'cmTryCompileExec2255500240/fast' failed
+make[1]: *** [cmTryCompileExec2255500240] Error 1
+make: *** [cmTryCompileExec2255500240/fast] Error 2
+
+

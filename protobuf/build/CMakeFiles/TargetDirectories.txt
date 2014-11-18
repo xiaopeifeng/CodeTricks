@@ -1,0 +1,4 @@
+/home/f_x_p/code-online/CodeTricks/protobuf/build/client/CMakeFiles/client.dir
+/home/f_x_p/code-online/CodeTricks/protobuf/build/CMakeFiles/googleproto.dir
+/home/f_x_p/code-online/CodeTricks/protobuf/build/pb/CMakeFiles/helloworld.dir
+/home/f_x_p/code-online/CodeTricks/protobuf/build/server/CMakeFiles/server.dir
