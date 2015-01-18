@@ -1,16 +1,17 @@
 #include "avhttp.hpp"
+#include "boost/algorithm/string.hpp"
 #include <regex>
 #include <iostream>
 
 class best_seller
 {
 public:
-	explicit best_seller(const boost::asio::io_service& io)
+	explicit best_seller(boost::asio::io_service& io)
 			: _io(io)
 			, _h(io)
 	{}
 	
-	~bestsellers()
+	~best_seller()
 	{}
 
 public:
@@ -29,8 +30,12 @@ public:
 private:
 	void handle_process()
 	{
-		std::istream is(_h);
-		std::string str;		
+		std::istream is(&_h);
+		std::string str;
+		while(std::getline(is, str)) {
+			if(str.find("bang_list clearfix bang_list_mode")) break;	
+		}
+
 		while(is.good())
 		{
 			str.clear();
@@ -38,26 +43,37 @@ private:
 			switch(_state)
 			{
 			case state_unknown:
-				if(str.find())
+				boost::trim(str);
+				if(str.find("div class=\"list_num red\"")){
+					_state = state_skip_1;		
+				}
+				break;
+			case state_skip_1: _state = state_found;break;
+			case state_found:
+					std::cout << str << std::endl;
+					_state = state_unknown;
+			default: break;
 			}
 		}
 	}
 
 private:
 	enum {
-		state_unknown;
-		state_found;
+		state_unknown,
+		state_skip_1,
+		state_found
 	}_state;
 
 private:
 	std::string _url;		
-	boost::asio::io_service _io;
+	boost::asio::io_service& _io;
 	avhttp::http_stream _h;
 };
 
 int main(int argc, char** argv)
 {
 	boost::asio::io_service io;
+	/*
 	boost::system::error_code ec;
 	avhttp::http_stream h(io);
 	h.open(query_url, ec);
@@ -83,5 +99,10 @@ int main(int argc, char** argv)
 		std::cerr << e.what() << std::endl;	
 		return -1;
 	}
+	*/
+	best_seller book(io);
+	book.start();
+
+	io.run();
 }
 
