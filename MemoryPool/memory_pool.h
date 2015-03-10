@@ -1,9 +1,4 @@
 #pragma once
-//  head info          body
-//[0x0000 0000][                 ]
-//
-//
-//
 
 class MemoryPool
 {
