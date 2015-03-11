@@ -1,111 +1,57 @@
-#include "memory_pool.h"
+// memory_pool.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+#include "pool.h"
 #include <iostream>
-#include <windows.h>
+#include <string>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
-MemoryPool::MemoryPool(size_t num, size_t size)
-	: m_free_blocks(num)
-	, m_total(num)
-	, m_block_size(size)
+std::mutex mtx;
+
+class obj
 {
-	for (int i = 0; i < size; ++i)
+public:
+	explicit obj(const std::string& str1, const std::string& str2)
+		: m_name(str1)
+		, m_address(str2)
 	{
-		m_buf = new unsigned char[(size + head_size) * num];
+		std::cout << "obj constructor called." << std::endl;
 	}
-	Initial();
-}
 
-MemoryPool::~MemoryPool()
-{
-	delete[] m_buf;
-}
-
-void MemoryPool::Initial()
-{
-	unsigned pos = 0;
-	for (unsigned int i = 0; i < m_total; ++i)
+	void print()
 	{
-		m_buf[pos++] = 0;
-		m_buf[pos++] = 0;
-		m_buf[pos++] = 0;
-		m_buf[pos++] = 0;
-
-		m_buf[pos++] = 0;
-		m_buf[pos++] = 0;
-
-		m_buf[pos++] = (unsigned char) (i >> 8);
-		m_buf[pos++] = (unsigned char) i;
-		pos += m_block_size;
+		std::cout << "name:" << m_name << std::endl;
+		std::cout << "address: " << m_address << std::endl;
 	}
-}
 
-void* MemoryPool::Alloc()
+private:
+	std::string m_name;
+	std::string m_address;
+};
+
+void fun(memory_pool* pool, size_t num)
 {
-	if (((int)AtomDecreaseBlockNum()) >= 0)
+	auto start = std::chrono::steady_clock::now();
+	for (int i = 0; i < num; ++i)
 	{
-		for (size_t i = 0; i < m_total; ++i)
-		{
-			if (IsFree(i))
-			{
-				if (AtomSetBusy(i) == 0)
-				{
-					return m_buf + (m_block_size + head_size)*i + head_size;
-				}
-				else
-				{
-					// set busy by other threads, deal noting here.
-				}
-			}
-		}
+		mtx.lock();
+		pool->Allocate();
+		mtx.unlock();
 	}
-	else
-	{
-		AtomIncreaseBlockNum();
-		std::cout << "not enough space..." << std::endl;
-		return nullptr;
-	}
-	return nullptr;
+	auto end = std::chrono::steady_clock::now();
+	auto diff = end - start;
+	std::cout << "time elapsed : " << std::chrono::duration_cast<std::chrono::nanoseconds>(diff).count() << " ms.." << std::endl;
 }
 
-bool MemoryPool::IsFree(size_t i)
+int _tmain(int argc, _TCHAR* argv[])
 {
-	return (m_buf[(head_size + m_block_size) * i] == 0);
+	memory_pool* obj_pool = new memory_pool(1000, sizeof(obj));
+	
+	std::thread th(fun, obj_pool, 100);
+	th.join();
+	return 0;
 }
 
-void MemoryPool::Delete(void* ptr)
-{
-	unsigned int index = 0;
-	unsigned char* head = (unsigned char*)ptr - head_size;
-	index = head[6];
-	index = (index << 8) + head[7];
-	AtomSetFree(index);
-	AtomIncreaseBlockNum();
-}
-
-int MemoryPool::GetFreeNum()
-{
-	return m_free_blocks;
-}
-
-unsigned int MemoryPool::AtomSetBusy(size_t i)
-{
-	void* ptr = m_buf + (head_size + m_block_size) * i;
-	return InterlockedExchangeAdd((long*)(ptr), (long)(1));
-}
-
-unsigned int MemoryPool::AtomSetFree(size_t i)
-{
-	void* ptr = m_buf + (head_size + m_block_size) * i;
-	return InterlockedExchangeAdd((long*)(ptr), (long)(-1));
-}
-
-//返回新值
-unsigned int MemoryPool::AtomIncreaseBlockNum()
-{
-	return InterlockedIncrement((long*)(&m_free_blocks));
-}
-
-//返回新值
-unsigned int MemoryPool::AtomDecreaseBlockNum()
-{
-	return InterlockedDecrement((long*)(&m_free_blocks));
-}
